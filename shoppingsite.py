@@ -6,7 +6,7 @@ put melons in a shopping cart.
 Authors: Joel Burton, Christian Fernandez, Meggie Mahnken, Katie Byers.
 """
 
-from flask import Flask, render_template, redirect, flash
+from flask import Flask, render_template, redirect, flash, session
 import jinja2
 
 import melons
@@ -49,16 +49,20 @@ def show_melon(melon_id):
 
     Show all info about a melon. Also, provide a button to buy that melon.
     """
+   
+    melon = melons.get_by_id(melon_id)
 
-    melon = melons.get_by_id("meli")
-    print(melon)
+    # What does print(melon) do?
+    # print(melon)
     return render_template("melon_details.html",
                            display_melon=melon)
 
+#Task 3: Add melons to the cart
 
 @app.route("/cart")
 def show_shopping_cart():
     """Display content of shopping cart."""
+    
 
     # TODO: Display the contents of the shopping cart.
 
@@ -78,6 +82,8 @@ def show_shopping_cart():
     # Make sure your function can also handle the case wherein no cart has
     # been added to the session
 
+    #SOLUTION
+    
     return render_template("cart.html")
 
 
@@ -88,6 +94,26 @@ def add_to_cart(melon_id):
     When a melon is added to the cart, redirect browser to the shopping cart
     page and display a confirmation message: 'Melon successfully added to
     cart'."""
+
+    #print(session)
+    
+    # cart = session.get("cart", {})
+    # before =  session = {}
+    #cart = {}
+    
+    # if cart not in session:
+    #     session["cart"] = {}
+    #     print(session)
+    
+    # after= session = { 'cart' : {}}
+
+    #nested dict: 
+
+    #nested_dict = { 'dict1': {'key_A': 'value_A'}, 
+                #'dict2': {'key_B': 'value_B'}} 
+
+    # if melon_id not in cart:
+    #     cart[melon_id] = 1
 
     # TODO: Finish shopping cart functionality
 
@@ -100,7 +126,27 @@ def add_to_cart(melon_id):
     # - flash a success message
     # - redirect the user to the cart page
 
-    return "Oops! This needs to be implemented!"
+    # SOLUTION
+    # Check if we have a cart in the session and if not, add one
+    # Also, bind the cart to the name 'cart' for easy reference below
+    if 'cart' in session:
+        cart = session['cart']
+        #session{'cart' : 'cart'}
+    else:
+        cart = session['cart'] = {}
+
+    # Add melon to cart - either increment the count (if melon already in cart)
+    # or add to cart with a count of 1
+    cart[melon_id] = cart.get(melon_id, 0) + 1
+
+    # Print cart to the terminal for testing purposes
+    # print("cart:")
+    # print(cart)
+
+    # Show user success message on next page load
+    flash("Melon successfully added to cart.")
+
+    return redirect("/cart")
 
 
 @app.route("/login", methods=["GET"])
